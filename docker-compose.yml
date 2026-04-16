@@ -22,6 +22,9 @@ services:
       POSTGRES_PASSWORD: postgres
 
   ewm-service:
+    build:
+      context: .
+      dockerfile: ./main-service/Dockerfile
     ports:
       - "8080:8080"
 
