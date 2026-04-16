@@ -1,7 +1,6 @@
 package ru.practicum.ewm.stats.mapper;
 
 import ru.practicum.ewm.stats.dto.InputHitDto;
-import ru.practicum.ewm.stats.dto.ResponseHitDto;
 import ru.practicum.ewm.stats.model.Hit;
 
 public class HitMapper {
