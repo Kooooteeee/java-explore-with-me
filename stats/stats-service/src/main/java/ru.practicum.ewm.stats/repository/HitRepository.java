@@ -19,9 +19,9 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
                                    @Param("end") LocalDateTime end);
 
 
-    @Query("select new ru.practicum.ewm.stats.dto.ResponseHitDto(h.app, h.uri, count(h) " +
+    @Query("select new ru.practicum.ewm.stats.dto.ResponseHitDto(h.app, h.uri, count(h)) " +
             "from Hit h " +
-            "where h.created >= :start and h.created <= :end and h.uri in (:uris)" +
+            "where h.created >= :start and h.created <= :end and h.uri in (:uris) " +
             "group by h.app, h.uri")
     List<ResponseHitDto> findStatsForUris(@Param("start") LocalDateTime start,
                                           @Param("end") LocalDateTime end,
@@ -36,7 +36,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
 
     @Query("select new ru.practicum.ewm.stats.dto.ResponseHitDto(h.app, h.uri, count(distinct h.ip)) " +
             "from Hit h " +
-            "where h.created >= :start and h.created <= :end and h.uri in (:uris)" +
+            "where h.created >= :start and h.created <= :end and h.uri in (:uris) " +
             "group by h.app, h.uri")
     List<ResponseHitDto> findStatsForUrisWithUniqueIp(@Param("start") LocalDateTime start,
                                           @Param("end") LocalDateTime end,
