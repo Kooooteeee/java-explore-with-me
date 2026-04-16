@@ -8,6 +8,7 @@ import ru.practicum.ewm.stats.mapper.HitMapper;
 import ru.practicum.ewm.stats.repository.HitRepository;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -24,13 +25,21 @@ public class HitService {
         boolean hasUris = uris != null && !uris.isEmpty();
 
         if (!hasUris && !unique) {
-            return repository.findStats(start, end);
+            return repository.findStats(start, end).stream()
+                    .sorted(Comparator.comparing(ResponseHitDto::getHits).reversed())
+                    .toList();
         } else if (!hasUris) {
-            return repository.findStatsWithUniqueIp(start, end);
+            return repository.findStatsWithUniqueIp(start, end).stream()
+                    .sorted(Comparator.comparing(ResponseHitDto::getHits).reversed())
+                    .toList();
         } else if (!unique) {
-            return repository.findStatsForUris(start, end, uris);
+            return repository.findStatsForUris(start, end, uris).stream()
+                    .sorted(Comparator.comparing(ResponseHitDto::getHits).reversed())
+                    .toList();
         } else {
-            return repository.findStatsForUrisWithUniqueIp(start, end, uris);
+            return repository.findStatsForUrisWithUniqueIp(start, end, uris).stream()
+                    .sorted(Comparator.comparing(ResponseHitDto::getHits).reversed())
+                    .toList();
         }
     }
 }
