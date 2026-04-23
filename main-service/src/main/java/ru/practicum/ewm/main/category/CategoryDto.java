@@ -1,5 +1,7 @@
 package ru.practicum.ewm.main.category;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,5 +10,7 @@ import lombok.Setter;
 public class CategoryDto {
 
     private Long id;
+    @NotBlank
+    @Size(max = 50)
     private String name;
 }

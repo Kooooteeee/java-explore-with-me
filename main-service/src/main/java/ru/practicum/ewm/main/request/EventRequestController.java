@@ -1,6 +1,7 @@
 package ru.practicum.ewm.main.request;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class EventRequestController {
     private final EventRequestService eventRequestService;
 
     @PostMapping("/requests")
+    @ResponseStatus(HttpStatus.CREATED)
     public EventRequestDto createRequest(@PathVariable Long userId,
                                          @RequestParam Long eventId) {
         return eventRequestService.createRequest(userId, eventId);

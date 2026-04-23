@@ -45,6 +45,8 @@ public class EventServiceImpl implements EventService {
         User initiator = findUserByIdOrThrow(userId);
         Category category = findCategoryByIdOrThrow(newEventDto.getCategory());
 
+        validateUserEventDate(newEventDto.getEventDate());
+
         Event event = EventMapper.toEvent(newEventDto, category, initiator);
         event.setCreatedOn(LocalDateTime.now());
         event.setState(EventState.PENDING);
@@ -93,6 +95,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateEventUserRequest.getEventDate() != null) {
+            validateUserEventDate(updateEventUserRequest.getEventDate());
             event.setEventDate(updateEventUserRequest.getEventDate());
         }
 
@@ -170,6 +173,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateEventAdminRequest.getEventDate() != null) {
+            validateAdminEventDate(updateEventAdminRequest.getEventDate());
             event.setEventDate(updateEventAdminRequest.getEventDate());
         }
 
@@ -199,6 +203,7 @@ public class EventServiceImpl implements EventService {
                 if (event.getState() != EventState.PENDING) {
                     throw new ConflictException("Можно публиковать только событие в состоянии ожидания публикации!");
                 }
+                validateAdminEventDate(event.getEventDate());
                 event.setState(EventState.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (updateEventAdminRequest.getStateAction() == UpdateEventAdminAction.REJECT_EVENT) {
@@ -431,5 +436,17 @@ public class EventServiceImpl implements EventService {
 
         //берем первую запись, потому что она всего одна
         return stats.get(0).getHits();
+    }
+
+    private void validateUserEventDate(LocalDateTime eventDate) {
+        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new IllegalArgumentException("Дата события должна быть не раньше чем через 2 часа от текущего момента!");
+        }
+    }
+
+    private void validateAdminEventDate(LocalDateTime eventDate) {
+        if (eventDate.isBefore(LocalDateTime.now().plusHours(1))) {
+            throw new IllegalArgumentException("Дата события должна быть не раньше чем через 1 час от текущего момента!");
+        }
     }
 }

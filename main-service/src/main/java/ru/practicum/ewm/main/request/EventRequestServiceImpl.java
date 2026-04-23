@@ -49,7 +49,7 @@ public class EventRequestServiceImpl implements EventRequestService {
         eventRequest.setRequester(user);
         eventRequest.setEvent(event);
 
-        if (!event.isRequestModeration()) {
+        if (event.getParticipantLimit() == 0 || !event.isRequestModeration()) {
             eventRequest.setStatus(RequestStatus.CONFIRMED);
         } else {
             eventRequest.setStatus(RequestStatus.PENDING);
