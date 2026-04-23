@@ -120,4 +120,15 @@ public class ErrorHandler {
                 LocalDateTime.now().format(FORMATTER)
         );
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleIllegalArgumentException(final IllegalArgumentException e) {
+        return new ApiError(
+                HttpStatus.BAD_REQUEST.toString(),
+                "Incorrectly made request.",
+                e.getMessage(),
+                LocalDateTime.now().format(FORMATTER)
+        );
+    }
 }
