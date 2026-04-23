@@ -35,7 +35,7 @@ public class StatsClient {
     public void saveHit(InputHitDto hitDto) {
         restTemplate.postForEntity(serverUrl + "/hit", hitDto, Void.class);
     }
-    
+
     public List<ResponseHitDto> getStats(LocalDateTime start,
                                          LocalDateTime end,
                                          List<String> uris,
