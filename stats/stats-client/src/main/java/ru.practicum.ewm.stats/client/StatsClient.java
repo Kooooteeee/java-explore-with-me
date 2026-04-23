@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
+import java.net.URI;
+
 @Component
 public class StatsClient {
 
@@ -42,16 +44,18 @@ public class StatsClient {
                                          boolean unique) {
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/stats")
-                .queryParam("start", FORMATTER.format(start))
-                .queryParam("end", FORMATTER.format(end))
+                .queryParam("start", start.format(FORMATTER))
+                .queryParam("end", end.format(FORMATTER))
                 .queryParam("unique", unique);
 
         if (uris != null && !uris.isEmpty()) {
             uriBuilder.queryParam("uris", uris.toArray());
         }
 
+        URI uri = uriBuilder.build().encode().toUri();
+
         ResponseEntity<List<ResponseHitDto>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                uri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<ResponseHitDto>>() {

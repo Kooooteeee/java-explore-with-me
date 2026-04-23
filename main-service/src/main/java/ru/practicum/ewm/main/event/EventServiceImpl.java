@@ -142,12 +142,15 @@ public class EventServiceImpl implements EventService {
                                              int size) {
         Pageable pageable = PageRequest.of(from / size, size);
 
+        LocalDateTime normalizedRangeStart = normalizeAdminRangeStart(rangeStart);
+        LocalDateTime normalizedRangeEnd = normalizeAdminRangeEnd(rangeEnd);
+
         List<Event> events = eventRepository.findAdminEvents(
                 normalizeLongList(users),
                 parseStates(states),
                 normalizeLongList(categories),
-                rangeStart,
-                rangeEnd,
+                normalizedRangeStart,
+                normalizedRangeEnd,
                 pageable
         );
 
@@ -231,6 +234,10 @@ public class EventServiceImpl implements EventService {
                                                String uri,
                                                String ip) {
         String normalizedText = normalizeText(text);
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new IllegalArgumentException("rangeStart не может быть позже rangeEnd");
+        }
+
         LocalDateTime normalizedRangeStart = normalizePublicRangeStart(rangeStart);
         LocalDateTime normalizedRangeEnd = normalizePublicRangeEnd(rangeEnd);
 
@@ -447,6 +454,20 @@ public class EventServiceImpl implements EventService {
         if (eventDate.isBefore(LocalDateTime.now().plusHours(1))) {
             throw new IllegalArgumentException("Дата события должна быть не раньше чем через 1 час от текущего момента!");
         }
+    }
+
+    private LocalDateTime normalizeAdminRangeStart(LocalDateTime rangeStart) {
+        if (rangeStart == null) {
+            return LocalDateTime.of(1000, 1, 1, 0, 0);
+        }
+        return rangeStart;
+    }
+
+    private LocalDateTime normalizeAdminRangeEnd(LocalDateTime rangeEnd) {
+        if (rangeEnd == null) {
+            return LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+        }
+        return rangeEnd;
     }
 
     private LocalDateTime normalizePublicRangeStart(LocalDateTime rangeStart) {
