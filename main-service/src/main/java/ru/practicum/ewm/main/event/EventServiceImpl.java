@@ -231,6 +231,8 @@ public class EventServiceImpl implements EventService {
                                                String uri,
                                                String ip) {
         String normalizedText = normalizeText(text);
+        LocalDateTime normalizedRangeStart = normalizePublicRangeStart(rangeStart);
+        LocalDateTime normalizedRangeEnd = normalizePublicRangeEnd(rangeEnd);
 
         saveHit(uri, ip);
 
@@ -239,8 +241,8 @@ public class EventServiceImpl implements EventService {
                     normalizedText,
                     normalizeLongList(categories),
                     paid,
-                    rangeStart,
-                    rangeEnd,
+                    normalizedRangeStart,
+                    normalizedRangeEnd,
                     onlyAvailable
             );
 
@@ -271,8 +273,8 @@ public class EventServiceImpl implements EventService {
                 normalizedText,
                 normalizeLongList(categories),
                 paid,
-                rangeStart,
-                rangeEnd,
+                normalizedRangeStart,
+                normalizedRangeEnd,
                 onlyAvailable,
                 pageable
         );
@@ -323,9 +325,6 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-    /*этот и подобные методы нужны для того, чтобы корректно работала проверка на null при обновлении
-    и в sql запросе в репозитории, понимаю, что выглядит странновато, но так дейстивтельно удобнее,
-    чем с пустыми списками*/
     private List<Long> normalizeLongList(List<Long> values) {
         if (values == null || values.isEmpty()) {
             return null;
@@ -335,7 +334,7 @@ public class EventServiceImpl implements EventService {
 
     private String normalizeText(String text) {
         if (text == null || text.isBlank()) {
-            return null;
+            return "";
         }
         return text;
     }
@@ -448,5 +447,19 @@ public class EventServiceImpl implements EventService {
         if (eventDate.isBefore(LocalDateTime.now().plusHours(1))) {
             throw new IllegalArgumentException("Дата события должна быть не раньше чем через 1 час от текущего момента!");
         }
+    }
+
+    private LocalDateTime normalizePublicRangeStart(LocalDateTime rangeStart) {
+        if (rangeStart == null) {
+            return LocalDateTime.now();
+        }
+        return rangeStart;
+    }
+
+    private LocalDateTime normalizePublicRangeEnd(LocalDateTime rangeEnd) {
+        if (rangeEnd == null) {
+            return LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+        }
+        return rangeEnd;
     }
 }
