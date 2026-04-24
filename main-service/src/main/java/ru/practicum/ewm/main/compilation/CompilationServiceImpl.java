@@ -40,7 +40,7 @@ public class CompilationServiceImpl implements CompilationService {
         }
 
         if (updateCompilationDto.getEvents() != null) {
-            compilation.setEvents(findAllEventsByIds(updateCompilationDto.getEvents()));
+            compilation.setEvents(findAllEventsByIds((Set<Long>) updateCompilationDto.getEvents()));
         }
 
         Compilation updatedCompilation = compilationRepository.save(compilation);
