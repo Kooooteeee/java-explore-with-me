@@ -408,7 +408,7 @@ public class EventServiceImpl implements EventService {
                 LocalDateTime.of(1970, 1, 1, 0, 0),
                 LocalDateTime.now(),
                 uris,
-                false
+                true
         );
 
         //строим таблицу uri - количество просмотров
@@ -433,7 +433,7 @@ public class EventServiceImpl implements EventService {
                 LocalDateTime.of(1970, 1, 1, 0, 0),
                 LocalDateTime.now(),
                 List.of("/events/" + eventId),//список из одного uri
-                false
+                true
         );
 
         if (stats.isEmpty()) {
