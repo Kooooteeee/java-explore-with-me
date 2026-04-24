@@ -79,7 +79,7 @@ public class CompilationServiceImpl implements CompilationService {
         return compilation.orElseThrow(() -> new NotFoundException("Такой подборки нет!"));
     }
 
-    private Set<Event> findAllEventsByIds(Set<Long> ids) {
+    private Set<Event> findAllEventsByIds(Collection<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return new HashSet<>();
         }

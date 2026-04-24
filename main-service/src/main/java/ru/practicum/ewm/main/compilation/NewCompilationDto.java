@@ -5,14 +5,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 @Getter
 @Setter
 public class NewCompilationDto {
 
-    private Set<Long> events = new HashSet<>();
+    private Collection<Long> events;
 
     private Boolean pinned = false;
 

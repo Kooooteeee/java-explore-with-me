@@ -4,13 +4,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.Collection;
 
 @Getter
 @Setter
 public class UpdateCompilationDto {
 
-    private Set<Long> events;
+    private Collection<Long> events;
 
     private Boolean pinned;
 
