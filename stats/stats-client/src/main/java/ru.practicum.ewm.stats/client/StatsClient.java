@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
+import java.net.URI;
+
 @Component
 public class StatsClient {
 
@@ -51,8 +53,10 @@ public class StatsClient {
             uriBuilder.queryParam("uris", uris.toArray());
         }
 
+        URI uri = uriBuilder.build().encode().toUri();
+
         ResponseEntity<List<ResponseHitDto>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                uri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<ResponseHitDto>>() {
