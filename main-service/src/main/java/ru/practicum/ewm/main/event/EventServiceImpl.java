@@ -316,10 +316,7 @@ public class EventServiceImpl implements EventService {
 
     private Event findEventByIdOrThrow(Long eventId) {
         Optional<Event> event = eventRepository.findById(eventId);
-        if (event.isEmpty()) {
-            throw new NotFoundException("Такого события нет!");
-        }
-        return event.get();
+        return event.orElseThrow(() -> new NotFoundException("Такого события нет!"));
     }
 
     private List<EventState> parseStates(List<String> states) {
@@ -356,26 +353,17 @@ public class EventServiceImpl implements EventService {
 
     private User findUserByIdOrThrow(Long id) {
         Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            throw new NotFoundException("Такого пользователя нет!");
-        }
-        return user.get();
+        return user.orElseThrow(() -> new NotFoundException("Такого пользователя нет!"));
     }
 
     private Category findCategoryByIdOrThrow(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
-        if (category.isEmpty()) {
-            throw new NotFoundException("Такой категории нет!");
-        }
-        return category.get();
+        return category.orElseThrow(() -> new NotFoundException("Такой категории нет!"));
     }
 
     private Event findByIdAndInitiatorIdOrThrow(Long eventId, Long userId) {
         Optional<Event> event = eventRepository.findByIdAndInitiatorId(eventId, userId);
-        if (event.isEmpty()) {
-            throw new NotFoundException("Такого события нет!");
-        }
-        return event.get();
+        return event.orElseThrow(() -> new NotFoundException("Такого события нет!"));
     }
 
     private long getConfirmedRequests(Long eventId) {

@@ -155,26 +155,17 @@ public class EventRequestServiceImpl implements EventRequestService {
 
     private User findUserByIdOrThrow(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new NotFoundException("Такого пользователя нет!");
-        }
-        return user.get();
+        return user.orElseThrow(() -> new NotFoundException("Такого пользователя нет!"));
     }
 
     private Event findEventByIdOrThrow(Long eventId) {
         Optional<Event> event = eventRepository.findById(eventId);
-        if (event.isEmpty()) {
-            throw new NotFoundException("Такого события нет!");
-        }
-        return event.get();
+        return event.orElseThrow(() -> new NotFoundException("Такого события нет!"));
     }
 
     private EventRequest findRequestByIdOrThrow(Long requestId) {
         Optional<EventRequest> eventRequest = eventRequestRepository.findById(requestId);
-        if (eventRequest.isEmpty()) {
-            throw new NotFoundException("Такой заявки нет!");
-        }
-        return eventRequest.get();
+        return eventRequest.orElseThrow(() -> new NotFoundException("Такой заявки нет!"));
     }
 
     private long getConfirmedRequests(Long eventId) {

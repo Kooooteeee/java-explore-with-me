@@ -76,10 +76,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     private Compilation findByIdOrThrow(Long id) {
         Optional<Compilation> compilation = compilationRepository.findById(id);
-        if (compilation.isEmpty()) {
-            throw new NotFoundException("Такой подборки нет!");
-        }
-        return compilation.get();
+        return compilation.orElseThrow(() -> new NotFoundException("Такой подборки нет!"));
     }
 
     private Set<Event> findAllEventsByIds(Set<Long> ids) {

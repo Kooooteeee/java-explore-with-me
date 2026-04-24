@@ -61,10 +61,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     private Category findByIdOrThrow(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
-        if (category.isEmpty()) {
-            throw  new NotFoundException("Такой категории нет!");
-        } else {
-            return category.get();
-        }
+        return category.orElseThrow(() -> new NotFoundException("Такой категории нет!"));
     }
 }

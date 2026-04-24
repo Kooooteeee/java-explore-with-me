@@ -52,10 +52,6 @@ public class UserServiceImpl implements UserService {
 
     private User findByIdOrThrow(Long id) {
         Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            throw new NotFoundException("Такого пользователя не существует!");
-        } else {
-            return user.get();
-        }
+        return user.orElseThrow(() -> new NotFoundException("Такого пользователя не существует!"));
     }
 }
