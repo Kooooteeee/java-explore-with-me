@@ -1,0 +1,34 @@
+package ru.practicum.ewm.main.compilation;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import ru.practicum.ewm.main.event.Event;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "compilations")
+@Getter
+@Setter
+public class Compilation {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "title", nullable = false, length = 50)
+    private String title;
+
+    @Column(name = "pinned", nullable = false)
+    private boolean pinned;
+
+    @ManyToMany
+    @JoinTable(
+            name = "compilation_events",
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private Set<Event> events = new HashSet<>();
+}

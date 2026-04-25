@@ -1,7 +1,9 @@
 package ru.practicum.ewm.stats.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.ewm.stats.dto.InputHitDto;
 import ru.practicum.ewm.stats.dto.ResponseHitDto;
 import ru.practicum.ewm.stats.mapper.HitMapper;
@@ -22,7 +24,13 @@ public class HitService {
 
     public List<ResponseHitDto> getStats(LocalDateTime start, LocalDateTime end,
                                          List<String> uris, boolean unique) {
-        boolean hasUris = uris != null && !uris.isEmpty();
+        if (start.isAfter(end)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Дата начала не может быть позже даты конца диапазона!"
+            );
+        }
+        boolean hasUris = (uris != null && !uris.isEmpty());
 
         if (!hasUris && !unique) {
             return repository.findStats(start, end).stream()
