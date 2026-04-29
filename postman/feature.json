@@ -1,0 +1,993 @@
+{
+  "info": {
+    "name": "feature-comments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": ""
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "initiatorId",
+      "value": ""
+    },
+    {
+      "key": "participantId",
+      "value": ""
+    },
+    {
+      "key": "outsiderId",
+      "value": ""
+    },
+    {
+      "key": "categoryId",
+      "value": ""
+    },
+    {
+      "key": "eventId",
+      "value": ""
+    },
+    {
+      "key": "requestId",
+      "value": ""
+    },
+    {
+      "key": "commentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Setup",
+      "item": [
+        {
+          "name": "Create initiator user",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/users",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"initiator-{{$guid}}@mail.com\",\"name\":\"Comment Initiator\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test('User DTO returned', function () { pm.expect(json).to.have.property('id'); pm.expect(json).to.have.property('email'); pm.expect(json).to.have.property('name'); });",
+                  "pm.collectionVariables.set('initiatorId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create participant user",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/users",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"participant-{{$guid}}@mail.com\",\"name\":\"Comment Participant\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('participantId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create outsider user",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/users",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"outsider-{{$guid}}@mail.com\",\"name\":\"Comment Outsider\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('outsiderId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create category",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/categories",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Comments-{{$timestamp}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Category DTO returned', function () { pm.expect(json).to.have.property('id'); pm.expect(json).to.have.property('name'); });",
+                  "pm.collectionVariables.set('categoryId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create event by initiator",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users/{{initiatorId}}/events",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"annotation\": \"Event for comment feature verification in postman tests\",\n  \"category\": {{categoryId}},\n  \"description\": \"This event is created to verify public, private and admin comment scenarios in the custom feature tests.\",\n  \"eventDate\": \"2030-01-01 12:00:00\",\n  \"location\": {\n    \"lat\": 55.75,\n    \"lon\": 37.61\n  },\n  \"paid\": false,\n  \"participantLimit\": 10,\n  \"requestModeration\": true,\n  \"title\": \"Comments feature event\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Event created', function () { pm.expect(json).to.have.property('id'); pm.expect(json).to.have.property('state'); });",
+                  "pm.collectionVariables.set('eventId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publish event by admin",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/events/{{eventId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"stateAction\":\"PUBLISH_EVENT\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Event published', function () { pm.expect(json.state).to.eql('PUBLISHED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Participant creates participation request",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users/{{participantId}}/requests?eventId={{eventId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Request pending', function () { pm.expect(json).to.have.property('id'); pm.expect(json.status).to.eql('PENDING'); });",
+                  "pm.collectionVariables.set('requestId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Initiator confirms request",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/{{initiatorId}}/events/{{eventId}}/requests",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"requestIds\":[{{requestId}}],\"status\":\"CONFIRMED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Request moved to confirmed list', function () { pm.expect(json.confirmedRequests).to.be.an('array').that.is.not.empty; pm.expect(json.confirmedRequests[0].status).to.eql('CONFIRMED'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 Positive flow",
+      "item": [
+        {
+          "name": "Create comment by participant (pending)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users/{{participantId}}/events/{{eventId}}/comments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"text\":\"Initial comment text from participant\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Comment created in pending state', function () { pm.expect(json).to.have.property('id'); pm.expect(json.status).to.eql('PENDING'); pm.expect(json.eventId).to.eql(Number(pm.collectionVariables.get('eventId'))); pm.expect(json.authorId).to.eql(Number(pm.collectionVariables.get('participantId'))); });",
+                  "pm.collectionVariables.set('commentId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Author gets own pending comment",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/{{participantId}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Full DTO returned for author', function () { pm.expect(json.id).to.eql(Number(pm.collectionVariables.get('commentId'))); pm.expect(json.status).to.eql('PENDING'); pm.expect(json).to.have.property('created'); pm.expect(json).to.have.property('updated'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public list before moderation is empty",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/events/{{eventId}}/comments?from=0&size=10",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('No public comments yet', function () { pm.expect(json).to.be.an('array'); pm.expect(json.length).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public cannot get pending comment by id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('404'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin publishes comment",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}?status=PUBLISHED",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Comment published', function () { pm.expect(json.status).to.eql('PUBLISHED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public gets published comment by id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Public DTO returned without internal id or status', function () { pm.expect(json).to.have.property('text'); pm.expect(json).to.have.property('eventId'); pm.expect(json).to.have.property('authorId'); pm.expect(json).to.have.property('updated'); pm.expect(json).to.not.have.property('id'); pm.expect(json).to.not.have.property('status'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public lists published comments by event",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/events/{{eventId}}/comments?from=0&size=10",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Published comment appears in list', function () { pm.expect(json).to.be.an('array').that.is.not.empty; pm.expect(json[0].eventId).to.eql(Number(pm.collectionVariables.get('eventId'))); pm.expect(json[0].authorId).to.eql(Number(pm.collectionVariables.get('participantId'))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin gets comment by id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Admin sees full DTO', function () { pm.expect(json.id).to.eql(Number(pm.collectionVariables.get('commentId'))); pm.expect(json.status).to.eql('PUBLISHED'); pm.expect(json.eventTitle).to.be.a('string'); pm.expect(json.authorName).to.be.a('string'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin filters comments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/comments?eventIds={{eventId}}&authorIds={{participantId}}&statuses=PUBLISHED&from=0&size=10",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Filtered admin list contains published comment', function () { pm.expect(json).to.be.an('array').that.is.not.empty; pm.expect(json[0].id).to.eql(Number(pm.collectionVariables.get('commentId'))); pm.expect(json[0].status).to.eql('PUBLISHED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Author updates own comment",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/{{participantId}}/comments/{{commentId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"text\":\"Updated comment text after author edit\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Update sends comment back to pending', function () { pm.expect(json.text).to.eql('Updated comment text after author edit'); pm.expect(json.status).to.eql('PENDING'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public cannot get updated comment before moderation",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('404'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin rejects updated comment",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}?status=REJECTED",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Comment rejected', function () { pm.expect(json.status).to.eql('REJECTED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin republishes comment",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}?status=PUBLISHED",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Comment published again', function () { pm.expect(json.status).to.eql('PUBLISHED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public gets updated comment after republish",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('Updated text is visible publicly', function () { pm.expect(json.text).to.eql('Updated comment text after author edit'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 Negative flow",
+      "item": [
+        {
+          "name": "Outsider cannot create comment without confirmed participation",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users/{{outsiderId}}/events/{{eventId}}/comments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"text\":\"I should not be able to comment\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json).to.have.property('status'); pm.expect(json).to.have.property('reason'); pm.expect(json).to.have.property('message'); pm.expect(json).to.have.property('timestamp'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validation fails for blank comment text",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users/{{participantId}}/events/{{eventId}}/comments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"text\":\"   \"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('400'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validation fails for too long comment text",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users/{{participantId}}/events/{{eventId}}/comments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"text\":\"{{longCommentText}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('longCommentText', 'x'.repeat(5001));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('400'); });",
+                  "pm.collectionVariables.unset('longCommentText');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Outsider cannot read another user's private comment",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/{{outsiderId}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 Conflict', function () { pm.response.to.have.status(409); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('409'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Outsider cannot update another user's private comment",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/{{outsiderId}}/comments/{{commentId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"text\":\"Illegal update attempt\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 Conflict', function () { pm.response.to.have.status(409); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('409'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Outsider cannot delete another user's private comment",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/{{outsiderId}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 Conflict', function () { pm.response.to.have.status(409); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('409'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin cannot set comment status back to pending",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}?status=PENDING",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 Conflict', function () { pm.response.to.have.status(409); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('409'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin status update requires query parameter",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('400'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public cannot get non-existent comment",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments/999999999",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('404'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public list validates positive page size",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/events/{{eventId}}/comments?from=0&size=0",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('400'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 Cleanup / destructive checks",
+      "item": [
+        {
+          "name": "Admin deletes comment",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public cannot get deleted comment",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('404'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin cannot get deleted comment",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/comments/{{commentId}}",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test('ApiError returned', function () { pm.expect(json.status).to.include('404'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
